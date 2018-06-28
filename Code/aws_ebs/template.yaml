@@ -1,0 +1,91 @@
+# Package and deploy with:
+# sam package --template-file template.yaml --output-template-file alexa-twitch-raffle-ebs-packaged.yml --s3-bucket gabehol-cloudformation-us-west-2 --force-upload && 
+# sam deploy --template-file alexa-twitch-raffle-ebs-packaged.yml --stack-name twitch-ebs --capabilities CAPABILITY_IAM --region us-west-2
+
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+    alexa-twitch-raffle-ebs
+
+    An Extension Backend Service for a Twitch Raffle extension
+    
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+    Function:
+        Timeout: 3
+    Api:
+        Cors:
+            AllowMethods: "'*'"
+            AllowHeaders: "'*'"
+            AllowOrigin: "'*'" # Restrict this to Twitch's domain when releasing to prod
+
+Resources:
+    RafflesTable:                   
+        Type: AWS::Serverless::SimpleTable
+        Properties:
+            PrimaryKey:
+                Name: id
+                Type: String
+            ProvisionedThroughput:
+                ReadCapacityUnits: 3
+                WriteCapacityUnits: 3
+
+    ApiFunction:
+        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Properties:
+            CodeUri: src/
+            Handler: app.lambda_handler
+            Runtime: nodejs8.10
+            Policies: AmazonDynamoDBFullAccess
+            Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+                Variables:
+                    EXT_SECRET: Your_Extension_Secret_Goes_Here
+                    EXT_CLIENT_ID: Your_Extension_Client_ID_Goes_Here
+                    EXT_OWNER_ID: Your_User_ID_Goes_Here
+
+                    DYNAMODB_RAFFLES_TABLE_ARN: !GetAtt RafflesTable.Arn
+                    RAFFLE_USERNAME: default
+            Events:
+                # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                CreateRaffle:
+                    Type: Api
+                    Properties:
+                        Path: "/raffles/create"
+                        Method: POST
+                EnterRaffle:
+                    Type: Api
+                    Properties:
+                        Path: "/raffles/{raffleId}/enter"
+                        Method: POST
+                GetRaffleWinner:
+                    Type: Api
+                    Properties:
+                        Path: "/raffles/{raffleId}/winner"
+                        Method: POST
+                DeleteRaffle:
+                    Type: Api
+                    Properties:
+                        Path: "/raffles/{raffleId}"
+                        Method: DELETE
+                RaffleStatus:
+                    Type: Api
+                    Properties:
+                        Path: "/status"
+                        Method: GET
+
+Outputs:
+    RafflesTable:
+      Description: "Our DynamoDB table for holding Raffles state"
+      Value: !GetAtt RafflesTable.Arn
+
+    RaffleAPI:
+      Description: "API Gateway endpoint URL for Prod stage for our API"
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+
+    APIFunction:
+      Description: "API Lambda Function ARN"
+      Value: !GetAtt ApiFunction.Arn
+
+    ApiFunctionIamRole:
+      Description: "Implicit IAM Role created"
+      Value: !GetAtt ApiFunctionRole.Arn

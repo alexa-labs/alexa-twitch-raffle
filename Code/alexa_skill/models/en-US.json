@@ -1,0 +1,52 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "twitch raffle",
+      "intents": [
+        {
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": [
+            "abort the raffle",
+            "stop the raffle",
+            "bail out",
+            "abort"
+          ]
+        },
+        {
+          "name": "StartRaffleIntent",
+          "samples": [
+            "start raffle",
+            "we want to comence a raffle ",
+            "begin a raffle",
+            "I want to start a raffle",
+            "one raffle please",
+            "dude raffle please",
+            "Let's start a raffle"
+          ]
+        },
+        {
+          "name": "PickWinnerIntent",
+          "samples": [
+            "winner winner chicken dinner",
+            "winner ",
+            "who is a winner",
+            "who is the winner",
+            "pick a winner"
+          ]
+        }
+      ]
+    }
+  }
+}

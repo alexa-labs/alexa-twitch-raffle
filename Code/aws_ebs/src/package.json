@@ -1,0 +1,20 @@
+{
+  "name": "raffle-extension",
+  "version": "1.0.0",
+  "description": "Simple Raffle Twitch Extension",
+  "main": "app.js",
+  "author": "Gabe Hollombe",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "aws-sdk": "^2.263.1",
+    "boom": "^7.2.0",
+    "hapi": "^17.2.2",
+    "jsonwebtoken": "^8.2.0",
+    "request": "^2.85.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0",
+    "supertest": "^3.1.0"
+  }
+}

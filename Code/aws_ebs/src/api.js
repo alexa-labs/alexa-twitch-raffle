@@ -15,7 +15,7 @@ const bearerPrefix = 'Bearer ';            // JWT auth headers have this prefix
 const ext = {
     secret: process.env.EXT_SECRET,
     clientId: process.env.EXT_CLIENT_ID,
-    ownerId: process.env.EXT_ONER_ID
+    ownerId: process.env.EXT_OWNER_ID
 }
 
 // log function that won't spam in production
